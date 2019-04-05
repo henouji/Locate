@@ -13,6 +13,7 @@ import 'here-js-api/scripts/mapsjs-ui';
 // For JAWG 
 import mapboxgl from 'mapbox-gl';
 import { async } from 'q';
+// For database
 
 
 declare var H : any;
@@ -55,7 +56,8 @@ export class HomePage {
     public loadingCtrl: LoadingController,
     private geolocation: Geolocation,
     private nativeGeocoder: NativeGeocoder,
-    private modal: ModalController
+    private modal: ModalController,
+    
   ) {
     this.platformInit()
   }
@@ -125,27 +127,19 @@ export class HomePage {
     // Add event listener for taps
     group.addEventListener('tap', 
       function (evt) {
-        // event target is the marker itself, group is a parent event target
-        // for all objects that it contains
-        let bubble =  new H.ui.InfoBubble(evt.target.getPosition(), {
-          // read custom data
-          content: evt.target.getData()
-        });
-        // Show Modal
         dataBind(evt.target.getData());
       }
     , false);
-    console.log("Added event Listener");
     // Get custom Icon
     let icon = new H.map.Icon('../assets/icon/gas.png',{size: {w: 64, h: 64}});  
     // Mark result to map
     function addPlacesToMap(result) {
         result.items.map(function (place) {
           let coordinates = {lat : place.position[0], lng: place.position[1]}; 
-          markStation(coordinates,place.title);
+          markStation(coordinates, place);
           });
           function markStation(coordinates,place){
-            let marker = new H.map.Marker(coordinates,{icon: icon});
+            let marker = new H.map.Marker(coordinates,{icon: icon});          
             marker.setData(place);
             group.addObject(marker);
           }

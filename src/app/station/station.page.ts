@@ -1,5 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavParams } from '@ionic/angular';
+import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
+import { FirebaseObjectObservable} from '@angular/fire/database-deprecated'
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { map } from  'rxjs/operators';
+import { FormsModule } from '@angular/forms';
+import { post } from 'selenium-webdriver/http';
+
 
 
 @Component({
@@ -8,7 +16,17 @@ import { NavParams } from '@ionic/angular';
   styleUrls: ['./station.page.scss'],
 })
 export class StationPage implements OnInit {
-
+  stationList : AngularFireList<{}>;
+  verifiedStationList = [];
+  gas: {
+    name: string;
+    price: number;
+  }
+  toUpdate: boolean = false;
+  fid: any;
+  gasForm: FormGroup;
+  crowdSource = [];
+  editShow: boolean = false;
   stations =[
     {
       name: 'Petron',
@@ -74,9 +92,17 @@ export class StationPage implements OnInit {
       kerosene: 'None'
     },
   ]
-  constructor(private navParams: NavParams) { }
+  constructor(private navParams: NavParams, public db: AngularFireDatabase, public formBuilder: FormBuilder) { 
+    this.stationList = db.list('Unverified');
+    this.gasForm = formBuilder.group({
+      name: ['', Validators.required],
+      price: ['', Validators.required]
+    });
+    console.log(this.eStation.id);
+    this.getStationInfo(this.eStation.id);  
+  }
 
-  stationTitle: any = this.navParams.get('data'); 
+  eStation: any = this.navParams.get('data'); 
   gs : display = {
     r97: 'None',
     r95: 'None',
@@ -86,10 +112,70 @@ export class StationPage implements OnInit {
     kero: 'None'
   };
 
+  clear(gas){
+    console.log(gas);
+    let index = this.crowdSource.indexOf(gas);
+    this.crowdSource.splice(index, 1);
+  }
+
+  async getStationInfo(id){
+    console.log("Getting station information");
+    this.stationList.snapshotChanges().subscribe(datas => {
+      datas.forEach(data => {        
+        const value = data.payload.val();
+          if(value.id == id){            
+            this.crowdSource = value.gas;
+            this.fid = data.payload.key;
+            this.toUpdate = true;
+          }
+        }
+      )
+    });
+  }
+
+  save(){  
+    let station = {
+      name : this.eStation.title,
+      position: this.eStation.position,
+      gas: this.crowdSource,
+      id: this.eStation.id
+    }
+    if(this.toUpdate){      
+        this.stationList.update(this.fid, station);
+    }
+    else  {
+      // console.log(station);
+      this.stationList.push(station);
+      // this.stationList.snapshotChanges().subscribe(data =>{
+      //   console.log(data);
+      // });
+    }
+    this.editShow = false;
+  }
+
+  discard(){
+    this.editShow = false;
+    this.crowdSource = [];
+    // console.log(this.crowdSource);
+  }
+
+  editDisplay(){
+    this.editShow = true;
+    console.log("Start Editing now");
+  }
+
+  formSubmit(){
+    // console.log(this.gasForm.value);
+    this.crowdSource.push(this.gasForm.value);
+  }
+  formTrial(){
+    console.log("Form");
+  }
+
   ngOnInit() {
     console.log(this.navParams.get('data'));
     for (let i = 0; i < this.stations.length; i++) {
-      if(this.stationTitle.includes(this.stations[i].name))
+      if(this.eStation.title.includes(this.stations[i].name))
       {
         console.log(this.stations[i]);
         this.gs.r97 = this.stations[i].ron97;
@@ -102,6 +188,13 @@ export class StationPage implements OnInit {
     }
   }
 
+}
+interface station {
+  name: string,
+  coordinates: {
+    lat: number,
+    lng: number
+  }
 }
 interface display {
   r97: any,

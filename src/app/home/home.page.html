@@ -1,19 +1,8 @@
 <ion-content>
   <div id="map" style="width:100%; height:100%;"></div>
-  Latitude : {{User.lat}}
-  Longitude: {{User.lng}}
-  Error: {{error}}
     <ion-fab vertical="bottom" horizontal="end">
-        <ion-fab-button><ion-icon name="locate"></ion-icon></ion-fab-button>
-        <ion-fab-list side="top">
-          <ion-fab-button (click)="openStationInfo()" ><ion-icon name="star"></ion-icon></ion-fab-button>
-        </ion-fab-list>
-      
-        <ion-fab-list (click)="start()" side="start">
-          <ion-fab-button><ion-icon name="navigate"></ion-icon></ion-fab-button>
-        </ion-fab-list>
-      
-      </ion-fab>
+        <ion-fab-button (click)="start()"><ion-icon name="locate"></ion-icon></ion-fab-button>      
+    </ion-fab>
   <!-- <ion-fab vertical="bottom" horizontal="end">
     <ion-fab-button>
       <ion-icon name="locate"></ion-icon>

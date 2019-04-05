@@ -1,18 +1,56 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Station</ion-title>
+    <ion-title>{{eStation.title}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
-{{stationTitle}}
+<ion-fab vertical="top" horizontal="end" *ngIf="editShow == false">
+    <ion-fab-button (click)="editDisplay()"><ion-icon name="create"></ion-icon></ion-fab-button>      
+</ion-fab>
 <ion-list>
-  <ion-item>Gasoline(Ron97) : {{gs.r97}}</ion-item>
-  <ion-item>Gasoline(Ron95) : {{gs.r95}}</ion-item>
+  <ion-item>{{eStation.vicinity}}</ion-item>
+  <ion-item *ngFor="let gas of crowdSource">
+    <ion-label>{{gas.name}} : {{gas.price}}</ion-label>
+    <ion-fab-button *ngIf="editShow == true" slot="end" size="small" color="danger" (click)="clear(gas)">
+      <ion-icon name="subtract-circle-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-item>
+  <ion-item>
+    Gasoline(Ron97) : {{gs.r97}} 
+    <ion-fab-button *ngIf="editShow == true" slot="end" size="small" color="danger" (click)="formTrial()">
+    <ion-icon name="subtract-circle-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-item>
+  <ion-item>
+    Gasoline(Ron95) : {{gs.r95}}
+    <ion-fab-button *ngIf="editShow == true" slot="end" size="small" color="danger" (click)="formTrial()">
+      <ion-icon name="subtract-circle-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-item>
   <ion-item>Gasoline(Ron91) : {{gs.r91}}</ion-item>
   <ion-item>Diesel : {{gs.dies}}</ion-item>
   <ion-item>Diesel Plus : {{gs.diesP}}</ion-item>
   <ion-item>Kerosene : {{gs.kero}}</ion-item>
-
+  <ion-item-divider *ngIf="editShow == true">
+    <ion-label>Edit Gasoline</ion-label>
+  </ion-item-divider>
+  <form *ngIf="editShow == true" [formGroup]="gasForm" (ngSubmit)="formSubmit()">
+      <ion-item>
+        <ion-label position="floating">Gas Type</ion-label>
+        <ion-input formControlName="name" type="text"></ion-input>
+        <ion-label position="floating">Price</ion-label>
+        <ion-input formControlName="price" type="number"></ion-input>
+      </ion-item>
+      <ion-button horizontal="center" block color="primary" type="submit" [disabled]="gasForm.invalid">
+          <ion-icon name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </form>
 </ion-list>
+<ion-fab vertical="bottom" horizontal="start" *ngIf="editShow == true">
+    <ion-fab-button (click)="save()"><ion-icon name="save"></ion-icon></ion-fab-button>      
+</ion-fab>
+<ion-fab vertical="bottom" horizontal="end" *ngIf="editShow == true">
+    <ion-fab-button (click)="discard()"><ion-icon name="close"></ion-icon></ion-fab-button>      
+</ion-fab>
 </ion-content>

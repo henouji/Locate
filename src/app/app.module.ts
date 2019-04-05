@@ -21,10 +21,25 @@ import { StationPageModule } from './station/station.module';
 // import { SettingsPageModule } from './settings/settings.module';
 // import { SettingsPage } from './settings/settings.page';
 
+// Databse 
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { firebaseConfig } from '../environments/environment';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,StationPageModule],
+  imports: [
+    BrowserModule, 
+    IonicModule.forRoot(), 
+    AppRoutingModule,
+    AngularFireModule.initializeApp(firebaseConfig, 'locate-database'),
+    AngularFireDatabaseModule,
+    FormsModule,
+    ReactiveFormsModule,
+    StationPageModule
+  ],
   providers: [
     StatusBar,
     SplashScreen,
