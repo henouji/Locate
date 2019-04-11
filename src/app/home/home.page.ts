@@ -44,7 +44,8 @@ export class HomePage {
   
   @ViewChild("map")
   public mapElement: ElementRef;
-  map: any;
+  map: any;  
+  // provider: any;
 
   public error: any;
   station : gasStation;
@@ -56,10 +57,10 @@ export class HomePage {
     public loadingCtrl: LoadingController,
     private geolocation: Geolocation,
     private nativeGeocoder: NativeGeocoder,
-    private modal: ModalController,
-    
+    private modal: ModalController,    
   ) {
-    this.platformInit()
+    this.platformInit();
+    // this.provider = new H.datalens.Provider();
   }
 
   ionViewWillEnter(){    

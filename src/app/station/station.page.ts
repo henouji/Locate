@@ -119,18 +119,29 @@ export class StationPage implements OnInit {
   }
 
   async getStationInfo(id){
-    console.log("Getting station information");
-    this.stationList.snapshotChanges().subscribe(datas => {
-      datas.forEach(data => {        
-        const value = data.payload.val();
-          if(value.id == id){            
-            this.crowdSource = value.gas;
-            this.fid = data.payload.key;
-            this.toUpdate = true;
-          }
-        }
-      )
+    // Get information of selected Station
+    this.db.list('Verified', ref => ref.orderByChild('id').equalTo(id)).snapshotChanges().
+    subscribe(queried => {
+      if(queried[0]){
+        this.crowdSource = queried[0].payload.val()['gas'];
+        this.fid = queried[0].payload.key;
+        this.toUpdate = true;
+      }
     });
+
+    // Runs through all verified stations and compares id
+    // ==================================================
+    // this.stationList.snapshotChanges().subscribe(datas => {
+    //   datas.forEach(data => {        
+    //     console.log(data.payload.val());
+    //       // if(data.payload.val().id == id){            
+    //       //   this.crowdSource = data.payload.val().gas;
+    //       //   this.fid = data.payload.key;
+    //       //   this.toUpdate = true;
+    //       // }
+    //     }
+    //   )
+    // });
   }
 
   save(){  
@@ -140,16 +151,16 @@ export class StationPage implements OnInit {
       gas: this.crowdSource,
       id: this.eStation.id
     }
-    if(this.toUpdate){      
-        this.stationList.update(this.fid, station);
-    }
-    else  {
+    // if(this.toUpdate){      
+    //     this.stationList.update(this.fid, station);
+    // }
+    // else  {
       // console.log(station);
       this.stationList.push(station);
       // this.stationList.snapshotChanges().subscribe(data =>{
       //   console.log(data);
       // });
-    }
+    // }
     this.editShow = false;
   }
 
@@ -186,6 +197,13 @@ export class StationPage implements OnInit {
         this.gs.kero = this.stations[i].kerosene;
       }
     }
+  }
+
+  ionViewDidLeave(){
+    this.crowdSource = [];
+    this.fid = '';
+    this.editShow = false;
+    console.log("Viewer Closed");
   }
 
 }
